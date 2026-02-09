@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC Exam Preparation - Questions & Answers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 SSC Exam Preparation Portal</h1>
+            <p class="subtitle">Practice Questions for CGL, CHSL, MTS & GD</p>
+        </header>
+
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen active">
+            <div class="exam-types">
+                <h2>Select Exam Type</h2>
+                <div class="exam-buttons">
+                    <button class="exam-btn" data-exam="CGL">SSC CGL</button>
+                    <button class="exam-btn" data-exam="CHSL">SSC CHSL</button>
+                    <button class="exam-btn" data-exam="MTS">SSC MTS</button>
+                    <button class="exam-btn" data-exam="GD">SSC GD</button>
+                </div>
+            </div>
+
+            <div class="topics-section">
+                <h2>Select Topic</h2>
+                <div class="topics-grid" id="topicsGrid">
+                    <!-- Topics will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="screen">
+            <div class="quiz-header">
+                <div class="quiz-info">
+                    <span id="currentTopic"></span>
+                    <span class="separator">|</span>
+                    <span id="currentExam"></span>
+                </div>
+                <div class="quiz-stats">
+                    <span>Question <span id="questionNumber">1</span> of <span id="totalQuestions">10</span></span>
+                    <span class="timer" id="timer">00:00</span>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-box">
+                    <h3 id="questionText"></h3>
+                    <div id="questionImage" class="question-image" style="display: none;"></div>
+                </div>
+
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be dynamically loaded -->
+                </div>
+
+                <div class="quiz-actions">
+                    <button id="prevBtn" class="btn btn-secondary" disabled>Previous</button>
+                    <button id="nextBtn" class="btn btn-primary">Next</button>
+                    <button id="submitBtn" class="btn btn-success" style="display: none;">Submit Test</button>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <div class="results-container">
+                <h2>Test Results</h2>
+                <div class="score-card">
+                    <div class="score-circle">
+                        <div class="score-value" id="finalScore">0</div>
+                        <div class="score-label">Score</div>
+                    </div>
+                    <div class="score-details">
+                        <div class="score-item">
+                            <span class="label">Total Questions:</span>
+                            <span class="value" id="totalQ">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="label">Correct:</span>
+                            <span class="value correct" id="correctCount">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="label">Incorrect:</span>
+                            <span class="value incorrect" id="incorrectCount">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="label">Unanswered:</span>
+                            <span class="value" id="unansweredCount">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span class="label">Time Taken:</span>
+                            <span class="value" id="timeTaken">00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-section">
+                    <h3>Review Answers</h3>
+                    <div id="reviewContainer"></div>
+                </div>
+
+                <div class="results-actions">
+                    <button id="retakeBtn" class="btn btn-primary">Take Another Test</button>
+                    <button id="homeBtn" class="btn btn-secondary">Back to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
