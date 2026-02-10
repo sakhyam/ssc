@@ -1,4 +1,17 @@
-// Application state
+// Subscription, user and application state
+const TRIAL_DAYS = 30;
+const MONTHLY_FEE_TAKA = 100;
+const SUBSCRIPTION_KEY = 'sscPrepSubscription';
+const USERS_KEY = 'sscPrepUsers';
+const CURRENT_USER_KEY = 'sscPrepCurrentUser';
+
+let subscriptionState = {
+    startDate: null,     // ISO string
+    isPaid: false
+};
+
+let currentUser = null; // { id, identifier }
+
 let currentState = {
     selectedExam: null,
     selectedTopic: null,
@@ -15,8 +28,131 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
+    initAuth();
+    initSubscription();
     loadTopics();
     setupEventListeners();
+
+    // Decide initial screen
+    if (currentUser) {
+        showScreen('homeScreen');
+    } else {
+        showScreen('authScreen');
+    }
+}
+
+// ---------- AUTH (LOGIN / SIGN UP) ----------
+function initAuth() {
+    // Load current user from storage
+    const savedUser = localStorage.getItem(CURRENT_USER_KEY);
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+        } catch {
+            currentUser = null;
+        }
+    }
+}
+
+function getUsers() {
+    const raw = localStorage.getItem(USERS_KEY);
+    if (!raw) return [];
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return [];
+    }
+}
+
+function saveUsers(users) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function setCurrentUser(user) {
+    currentUser = { id: user.id, identifier: user.identifier };
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+}
+
+function ensureAuthenticated() {
+    if (currentUser) return true;
+    alert('Please log in or create an account with your Gmail or mobile number first.');
+    showScreen('authScreen');
+    return false;
+}
+
+function initSubscription() {
+    const saved = localStorage.getItem(SUBSCRIPTION_KEY);
+    if (saved) {
+        try {
+            subscriptionState = JSON.parse(saved);
+        } catch {
+            subscriptionState = { startDate: null, isPaid: false };
+        }
+    }
+
+    // If first visit, start free trial
+    if (!subscriptionState.startDate) {
+        subscriptionState.startDate = new Date().toISOString();
+        subscriptionState.isPaid = false;
+        persistSubscription();
+    }
+
+    updateSubscriptionUI();
+}
+
+function persistSubscription() {
+    localStorage.setItem(SUBSCRIPTION_KEY, JSON.stringify(subscriptionState));
+}
+
+function getTrialInfo() {
+    const start = new Date(subscriptionState.startDate);
+    const now = new Date();
+    const diffMs = now - start;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const daysLeft = Math.max(0, TRIAL_DAYS - diffDays);
+    const isTrialActive = daysLeft > 0;
+    const isAccessActive = subscriptionState.isPaid || isTrialActive;
+
+    return { diffDays, daysLeft, isTrialActive, isAccessActive };
+}
+
+function updateSubscriptionUI() {
+    const statusEl = document.getElementById('subscriptionStatus');
+    if (!statusEl) return;
+
+    const { daysLeft, isTrialActive, isAccessActive } = getTrialInfo();
+
+    statusEl.classList.remove('active-trial', 'expired', 'paid');
+
+    if (subscriptionState.isPaid) {
+        statusEl.textContent = `Access: Active (Paid subscriber – 100 taka/month).`;
+        statusEl.classList.add('paid');
+    } else if (isTrialActive) {
+        statusEl.textContent = `Free trial active: ${daysLeft} day${daysLeft === 1 ? '' : 's'} remaining.`;
+        statusEl.classList.add('active-trial');
+    } else {
+        statusEl.textContent = `Free trial expired. Please pay 100 taka per month to continue using all tests.`;
+        statusEl.classList.add('expired');
+    }
+
+    const markPaidBtn = document.getElementById('markPaidBtn');
+    if (markPaidBtn) {
+        markPaidBtn.disabled = subscriptionState.isPaid;
+        if (subscriptionState.isPaid) {
+            markPaidBtn.textContent = 'Payment confirmed';
+        } else {
+            markPaidBtn.textContent = 'I have paid 100 taka';
+        }
+    }
+}
+
+function ensureAccessAllowed() {
+    const { isAccessActive, isTrialActive } = getTrialInfo();
+    if (isAccessActive) return true;
+
+    let message = 'Your free 1-month trial has ended. Please pay 100 taka per month to continue practicing.';
+    alert(message);
+    return false;
 }
 
 function loadTopics() {
@@ -47,6 +183,86 @@ function loadTopics() {
 }
 
 function setupEventListeners() {
+    // Auth tabs
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+
+    if (loginTab && registerTab && loginForm && registerForm) {
+        loginTab.addEventListener('click', function() {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        });
+
+        registerTab.addEventListener('click', function() {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('loginIdentifier').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const users = getUsers();
+            const user = users.find(u => u.identifier.toLowerCase() === identifier.toLowerCase() && u.password === password);
+
+            if (!user) {
+                alert('Invalid Gmail/number or password.');
+                return;
+            }
+
+            setCurrentUser(user);
+            alert('Logged in successfully.');
+            showScreen('homeScreen');
+        });
+
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const identifier = document.getElementById('registerIdentifier').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerPasswordConfirm').value;
+
+            if (!identifier) {
+                alert('Please enter your Gmail address or mobile number.');
+                return;
+            }
+
+            if (password.length < 4) {
+                alert('Password must be at least 4 characters.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            const users = getUsers();
+            const exists = users.some(u => u.identifier.toLowerCase() === identifier.toLowerCase());
+            if (exists) {
+                alert('An account with this Gmail/number already exists. Please log in instead.');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                identifier,
+                password
+            };
+            users.push(newUser);
+            saveUsers(users);
+            setCurrentUser(newUser);
+            alert('Account created successfully. You are now logged in.');
+            showScreen('homeScreen');
+        });
+    }
+
     // Exam type buttons
     document.querySelectorAll('.exam-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -56,6 +272,21 @@ function setupEventListeners() {
         });
     });
     
+    // Mark as paid (manual confirmation)
+    const markPaidBtn = document.getElementById('markPaidBtn');
+    if (markPaidBtn) {
+        markPaidBtn.addEventListener('click', () => {
+            if (subscriptionState.isPaid) return;
+            const confirmPaid = confirm('Confirm that you have paid 100 taka for this month?');
+            if (confirmPaid) {
+                subscriptionState.isPaid = true;
+                persistSubscription();
+                updateSubscriptionUI();
+                alert('Thank you! Your access is now unlocked.');
+            }
+        });
+    }
+
     // Navigation buttons
     document.getElementById('prevBtn').addEventListener('click', showPreviousQuestion);
     document.getElementById('nextBtn').addEventListener('click', showNextQuestion);
@@ -65,6 +296,14 @@ function setupEventListeners() {
 }
 
 function selectTopic(topic) {
+    if (!ensureAuthenticated()) {
+        return;
+    }
+
+    if (!ensureAccessAllowed()) {
+        return;
+    }
+
     if (!currentState.selectedExam) {
         alert('Please select an exam type first!');
         return;

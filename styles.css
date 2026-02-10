@@ -70,7 +70,145 @@ header h1 {
     }
 }
 
+/* Auth Screen Styles */
+.auth-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 30px 24px;
+    box-shadow: var(--shadow-lg);
+    max-width: 480px;
+    margin: 0 auto 30px;
+}
+
+.auth-card h2 {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.auth-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+}
+
+.auth-toggle {
+    display: inline-flex;
+    border-radius: 999px;
+    background: var(--bg-color);
+    padding: 3px;
+    margin-bottom: 18px;
+}
+
+.auth-tab {
+    border: none;
+    background: transparent;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.auth-tab.active {
+    background: var(--primary-color);
+    color: #ffffff;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.auth-form.hidden {
+    display: none;
+}
+
+.auth-form label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.auth-form input {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 0.95rem;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.15);
+}
+
+.auth-note {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.full-width {
+    width: 100%;
+    margin-top: 8px;
+}
+
 /* Home Screen Styles */
+.subscription-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #4f46e5 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.subscription-text h2 {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+}
+
+.subscription-text p {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.subscription-status {
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+.subscription-status.active-trial {
+    color: #a7f3d0;
+}
+
+.subscription-status.expired {
+    color: #fecaca;
+}
+
+.subscription-status.paid {
+    color: #bbf7d0;
+}
+
+.subscription-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.small-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
 .exam-types {
     background: var(--card-bg);
     border-radius: 12px;

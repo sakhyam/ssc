@@ -13,8 +13,56 @@
             <p class="subtitle">Practice Questions for CGL, CHSL, MTS & GD</p>
         </header>
 
+        <!-- Auth Screen -->
+        <div id="authScreen" class="screen active">
+            <div class="auth-card">
+                <h2>Login or Create Account</h2>
+                <p class="auth-subtitle">Use your Gmail address or mobile number to create your SSC prep ID.</p>
+
+                <div class="auth-toggle">
+                    <button id="loginTab" class="auth-tab active" type="button">Log In</button>
+                    <button id="registerTab" class="auth-tab" type="button">Sign Up</button>
+                </div>
+
+                <form id="loginForm" class="auth-form">
+                    <label for="loginIdentifier">Gmail or Mobile Number</label>
+                    <input id="loginIdentifier" type="text" required placeholder="example@gmail.com or 01XXXXXXXXX">
+
+                    <label for="loginPassword">Password</label>
+                    <input id="loginPassword" type="password" required minlength="4" placeholder="Enter your password">
+
+                    <button type="submit" class="btn btn-primary full-width">Log In</button>
+                </form>
+
+                <form id="registerForm" class="auth-form hidden">
+                    <label for="registerIdentifier">Gmail or Mobile Number</label>
+                    <input id="registerIdentifier" type="text" required placeholder="example@gmail.com or 01XXXXXXXXX">
+
+                    <label for="registerPassword">Password</label>
+                    <input id="registerPassword" type="password" required minlength="4" placeholder="Choose a password (min 4 characters)">
+
+                    <label for="registerPasswordConfirm">Confirm Password</label>
+                    <input id="registerPasswordConfirm" type="password" required minlength="4" placeholder="Re-enter password">
+
+                    <button type="submit" class="btn btn-success full-width">Create Account</button>
+                </form>
+
+                <p class="auth-note">Note: This demo stores your login only in this browser. For real exams, use a secure backend server.</p>
+            </div>
+        </div>
+
         <!-- Home Screen -->
-        <div id="homeScreen" class="screen active">
+        <div id="homeScreen" class="screen">
+            <div class="subscription-banner">
+                <div class="subscription-text">
+                    <h2>SSC Prep Access</h2>
+                    <p>Enjoy a <strong>100% free trial for 1 month</strong>. After that, continue unlimited practice for <strong>100 taka per month</strong>.</p>
+                    <p id="subscriptionStatus" class="subscription-status"></p>
+                </div>
+                <div class="subscription-actions">
+                    <button id="markPaidBtn" class="btn btn-success small-btn">I have paid 100 taka</button>
+                </div>
+            </div>
             <div class="exam-types">
                 <h2>Select Exam Type</h2>
                 <div class="exam-buttons">
